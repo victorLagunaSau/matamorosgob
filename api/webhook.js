@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   try {
     // Procesar el mensaje con OpenAI
     const openaiResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Modelo de OpenAI para enriquecer la respuesta
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: "Eres un asistente amable y claro para emergencias en Matamoros, Tamaulipas." },
         { role: "user", content: incomingMessage },
@@ -60,20 +60,20 @@ export default async function handler(req, res) {
 
     // Enviar respuesta al usuario vía Twilio
     await twilioClient.messages.create({
-      from: process.env.TWILIO_WHATSAPP_NUMBER, // Número configurado en .env
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
       body: limitedResponse,
       to: sender,
     });
 
-    // Responder a Twilio con éxito
+    // Responder a Twilio con un estado vacío
     res.setHeader("Content-Type", "text/plain");
-    res.status(200).send("Mensaje procesado correctamente");
+    res.status(200).send("");
   } catch (error) {
     console.error("Error procesando la solicitud:", error.message);
 
     // Responder a Twilio en caso de error
     res.setHeader("Content-Type", "text/plain");
-    res.status(500).send("Ocurrió un problema al procesar tu solicitud.");
+    res.status(500).send("");
   }
 }
 
