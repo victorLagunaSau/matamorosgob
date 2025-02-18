@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/webhook/call.js",
+      "src": "api/webhook.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/webhook/call",
-      "dest": "api/webhook/call.js"
+      "src": "/api/webhook",
+      "dest": "api/webhook.js"
     }
   ]
 }

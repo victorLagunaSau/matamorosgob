@@ -25,17 +25,10 @@ const MAX_CHARACTERS = 390;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.setHeader("Content-Type", "application/json");
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { Body: incomingMessage, From: sender } = req.body || {};
-
-  // Validar que los datos necesarios están presentes
-  if (!incomingMessage || !sender) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({ error: "Invalid request body" });
-  }
+  const { Body: incomingMessage, From: sender } = req.body; // Datos enviados por Twilio
 
   try {
     // Procesar el mensaje con OpenAI
@@ -65,15 +58,15 @@ export default async function handler(req, res) {
       to: sender,
     });
 
-    // Responder a Twilio con éxito
-    res.setHeader("Content-Type", "text/plain");
-    res.status(200).send("Mensaje procesado correctamente");
+    res.status(200).json({ message: "Mensaje procesado correctamente" });
   } catch (error) {
     console.error("Error procesando la solicitud:", error.message);
 
-    // Responder a Twilio en caso de error
-    res.setHeader("Content-Type", "text/plain");
-    res.status(500).send("Ocurrió un problema al procesar tu solicitud.");
+    // Respuesta en caso de error
+    res.status(500).json({
+      error: "Ocurrió un problema al procesar tu solicitud.",
+      details: error.message,
+    });
   }
 }
 
