@@ -25,22 +25,15 @@ const MAX_CHARACTERS = 390;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.setHeader("Content-Type", "application/json");
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { Body: incomingMessage, From: sender } = req.body || {};
-
-  // Validar que los datos necesarios están presentes
-  if (!incomingMessage || !sender) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(400).json({ error: "Invalid request body" });
-  }
+  const { Body: incomingMessage, From: sender } = req.body; // Datos enviados por Twilio
 
   try {
     // Procesar el mensaje con OpenAI
     const openaiResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo", // Modelo de OpenAI para enriquecer la respuesta
       messages: [
         { role: "system", content: "Eres un asistente amable y claro para emergencias en Matamoros, Tamaulipas." },
         { role: "user", content: incomingMessage },
@@ -60,20 +53,20 @@ export default async function handler(req, res) {
 
     // Enviar respuesta al usuario vía Twilio
     await twilioClient.messages.create({
-      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      from: process.env.TWILIO_WHATSAPP_NUMBER, // Número configurado en .env
       body: limitedResponse,
       to: sender,
     });
 
-    // Responder a Twilio con un estado vacío
-    res.setHeader("Content-Type", "text/plain");
-    res.status(200).send("");
+    res.status(200).json({ message: "Mensaje procesado correctamente" });
   } catch (error) {
     console.error("Error procesando la solicitud:", error.message);
 
-    // Responder a Twilio en caso de error
-    res.setHeader("Content-Type", "text/plain");
-    res.status(500).send("");
+    // Respuesta en caso de error
+    res.status(500).json({
+      error: "Ocurrió un problema al procesar tu solicitud.",
+      details: error.message,
+    });
   }
 }
 
