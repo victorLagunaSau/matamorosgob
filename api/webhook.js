@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     const openaiResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo", // Modelo de OpenAI para enriquecer la respuesta
       messages: [
-        { role: "system", content: "Eres un asistente amable y claro para emergencias en Matamoros, Tamaulipas." },
+        { role: "system", content: "Eres un asistente amable y claro para emergencias en Matamoros, Tamaulipas, preséntate como RIGO" },
         { role: "user", content: incomingMessage },
       ],
       max_tokens: 150,
